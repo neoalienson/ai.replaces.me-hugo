@@ -56,7 +56,6 @@ jobs:
           hugo \
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
-          echo "${{ github.repository }}"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
@@ -73,7 +72,7 @@ jobs:
         id: latest_tag
         uses: oprypin/find-latest-tag@v1
         with:
-          repository: context.github.repository
+          repository: github.repository
           releases-only: true
 
       - name: Create new tag
