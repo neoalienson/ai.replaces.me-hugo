@@ -70,10 +70,16 @@ jobs:
 
       - name: Get latest tag
         id: latest_tag
-        uses: oprypin/find-latest-tag@v1
+        uses: actions/github-script@v6
         with:
-          repository: "neoalienson/ai.replaces.me-hugo"
-          releases-only: true
+          script: |
+            const { data: tags } = await github.rest.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 1
+            });
+            console.log(tags[0].name);
+            echo "LATEST_TAG=tags[0].name" >> $GITHUB_ENV
 
       - name: Create new tag
         id: create_tag
@@ -83,8 +89,8 @@ jobs:
             const { data: tag } = await github.rest.git.createTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: `v${parseInt(steps.latest_tag.outputs.tag.slice(1)) + 1}`,
-              message: `Auto-incrementing tag v${parseInt(steps.latest_tag.outputs.tag.slice(1)) + 1}`,
+              tag: `v${parseInt(env.LATEST_TAG.slice(1)) + 1}`,
+              message: `Auto-incrementing tag v${parseInt(env.LATEST_TAG.slice(1)) + 1}`,
               object: process.env.GITHUB_SHA,
               type: 'commit'
             });
