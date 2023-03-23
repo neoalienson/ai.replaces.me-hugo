@@ -80,8 +80,8 @@ jobs:
         id: latest_tag
         uses: oprypin/find-latest-tag@v1
         with:
-          repository: context.repo.repo
-          release-only: true
+          repository: "neoalienson/ai.replaces.me-hugo"
+          releases: true
 
       - name: Create new tag
         id: create_tag
