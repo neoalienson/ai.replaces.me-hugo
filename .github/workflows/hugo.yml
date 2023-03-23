@@ -70,6 +70,7 @@ jobs:
           path: ./public
 
   create-tag:
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -115,6 +116,7 @@ jobs:
             });
 
   release:
+    runs-on: self-hosted
     steps:
       - name: Create Release
         id: create_release
