@@ -79,7 +79,7 @@ jobs:
               per_page: 1
             });
             console.log(tags[0].name);
-            echo "LATEST_TAG=tags[0].name" >> $GITHUB_ENV
+            return tags[0].name;
 
       - name: Create new tag
         id: create_tag
@@ -89,8 +89,8 @@ jobs:
             const { data: tag } = await github.rest.git.createTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: `v${parseInt(env.LATEST_TAG.slice(1)) + 1}`,
-              message: `Auto-incrementing tag v${parseInt(env.LATEST_TAG.slice(1)) + 1}`,
+              tag: `v${parseInt(steps.latest_tag.outputs.result.slice(1)) + 1}`,
+              message: `Auto-incrementing tag v${parseInt(steps.latest_tag.outputs.result.slice(1)) + 1}`,
               object: process.env.GITHUB_SHA,
               type: 'commit'
             });
