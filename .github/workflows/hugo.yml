@@ -64,6 +64,7 @@ jobs:
   create-tag:
     needs: [build]
     runs-on: self-hosted
+    permissions: write-all
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
