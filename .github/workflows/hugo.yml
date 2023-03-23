@@ -72,7 +72,7 @@ jobs:
         id: latest_tag
         uses: oprypin/find-latest-tag@v1
         with:
-          repository: github.repository
+          repository: "neoalienson/ai.replaces.me-hugo"
           releases-only: true
 
       - name: Create new tag
