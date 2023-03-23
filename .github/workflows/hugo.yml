@@ -70,6 +70,7 @@ jobs:
           path: ./public
 
   create-tag:
+    needs: [build]
     runs-on: self-hosted
     steps:
       - name: Checkout code
@@ -117,6 +118,7 @@ jobs:
             });
 
   release:
+    needs: [create-tag]
     runs-on: self-hosted
     steps:
       - name: Create Release
