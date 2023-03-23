@@ -85,28 +85,14 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { data: tag } = await github.rest.git.createTag({
+            const { data: tag } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: ${{ steps.latest_tag.outputs.result }},
-              object: process.env.GITHUB_SHA,
-              type: 'commit'
+              tag_name: ${{ steps.latest_tag.outputs.result }},
+              name: ${{ steps.latest_tag.outputs.result }},
             });
-            console.log(tag);
-            process.env.LATEST_TAG = tag;
             return tag;
-
-      - name: Push new tag
-        uses: actions/github-script@v6
-        with:
-          script: |
-            await github.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: `refs/tags/${steps.create_tag.outputs.result.data.tag}`,
-              sha: steps.create_tag.outputs.result.data.sha
-            });
-
+m
   release:
     needs: [create-tag]
     runs-on: self-hosted
