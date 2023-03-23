@@ -80,7 +80,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { data: tag } = await github.git.createTag({
+            const client = github.getOctokit(core.getInput('token'))
+            const { data: tag } = await client.git.createTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag: `v${parseInt(steps.latest_tag.outputs.tag.slice(1)) + 1}`,
