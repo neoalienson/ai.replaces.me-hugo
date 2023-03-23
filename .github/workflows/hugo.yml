@@ -79,7 +79,7 @@ jobs:
               repo: context.repo.repo,
               per_page: 1
             });
-            return "v" + tags[0].name.slice(1) + 1;
+            return "v" + parseInt(tags[0].name.slice(1)) + 1;
 
       - name: Create new tag
         id: create_tag
