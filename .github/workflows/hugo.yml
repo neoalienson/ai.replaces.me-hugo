@@ -77,7 +77,7 @@ jobs:
 
       - name: Get latest tag
         id: latest_tag
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             const { data: tags } = await github.repos.listTags({
@@ -86,26 +86,27 @@ jobs:
               per_page: 1
             });
             console.log(tags[0].name);
-            return tags[0].name;
+            process.env.LATEST_TAG = tags[0].name;
 
       - name: Create new tag
         id: create_tag
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             const { data: tag } = await github.git.createTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: `v${parseInt(steps.latest_tag.outputs.result.slice(1)) + 1}`,
-              message: `Auto-incrementing tag v${parseInt(steps.latest_tag.outputs.result.slice(1)) + 1}`,
+              tag: `v${parseInt(process.env.LATEST_TAG.slice(1)) + 1}`,
+              message: `Auto-incrementing tag v${parseInt(process.env.LATEST_TAG.slice(1)) + 1}`,
               object: process.env.GITHUB_SHA,
               type: 'commit'
             });
             console.log(tag);
+            process.env.LATEST_TAG = tag;
             return tag;
 
       - name: Push new tag
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             await github.git.createRef({
