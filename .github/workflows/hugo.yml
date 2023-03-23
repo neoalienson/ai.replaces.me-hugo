@@ -92,7 +92,7 @@ jobs:
               name: ${{ steps.latest_tag.outputs.result }},
             });
             return tag;
-m
+
   release:
     needs: [create-tag]
     runs-on: self-hosted
