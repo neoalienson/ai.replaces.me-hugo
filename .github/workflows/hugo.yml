@@ -98,12 +98,12 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { data: { upload_url: uploadUrl } } = await github.rest.repos.createRelease({
+            const { data: { id: release_id } } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: ${{ steps.latest_tag.outputs.result }},
             });
-            return uploadUrl;
+            return release_id;
 
       - name: Download artifact
         uses: actions/download-artifact@v3
@@ -118,10 +118,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
+            const fs = require('fs');
             await github.rest.repos.uploadReleaseAsset({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: ${{ steps.create_release.outputs.result }},
+              release_id: ${{ steps.create_release.outputs.result }},
               name: "hugo.zip",
               file: fs.readFileSync("./hugo.zip"),
             });
