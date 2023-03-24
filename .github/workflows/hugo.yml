@@ -102,9 +102,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: ${{ steps.latest_tag.outputs.result }},
-              name: ${{ steps.latest_tag.outputs.result }},
             });
-            console.log(uploadUrl);
             return uploadUrl;
 
       - name: Download artifact
