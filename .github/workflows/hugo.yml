@@ -104,6 +104,7 @@ jobs:
               tag_name: ${{ steps.latest_tag.outputs.result }},
               name: ${{ steps.latest_tag.outputs.result }},
             });
+            console.log(uploadUrl);
             return uploadUrl;
 
       - name: Download artifact
