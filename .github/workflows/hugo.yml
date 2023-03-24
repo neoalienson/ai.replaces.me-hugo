@@ -113,10 +113,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.latest_tag.outputs.result }},
-          release_name: ${{ steps.latest_tag.outputs.result }},
-          body: ${{ steps.latest_tag.outputs.result }},
-          draft: false
-          prerelease: false
+          release_name: Release ${{ steps.latest_tag.outputs.result }},
 
       - name: Download artifact
         uses: actions/download-artifact@v3
