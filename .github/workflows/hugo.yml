@@ -28,6 +28,7 @@ defaults:
 jobs:
   # Build job
   build:
+    permissions: write-all
     runs-on: self-hosted
     env:
       HUGO_VERSION: 0.108.0
@@ -60,10 +61,6 @@ jobs:
         run: |
           zip -r hugo.zip public
 
-    needs: [build]
-    runs-on: self-hosted
-    permissions: write-all
-    steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
