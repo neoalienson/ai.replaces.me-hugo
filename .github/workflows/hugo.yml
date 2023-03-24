@@ -121,7 +121,7 @@ jobs:
             await github.rest.repos.uploadReleaseAsset({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: ${{ github.ref }},
+              tag: ${{ teps.create_release.outputs.result }},
               name: "hugo.zip",
               file: fs.readFileSync("./hugo.zip"),
             });
