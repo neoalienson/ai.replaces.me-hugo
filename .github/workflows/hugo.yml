@@ -118,11 +118,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
-            const { data: { upload_url: uploadUrl } } = await github.rest.repos.uploadReleaseAsset({
+            await github.rest.repos.uploadReleaseAsset({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: ${{ github.ref }}
-              name: "hugo.zip"
-              file: fs.readFileSync("./hugo.zip")
+              tag: ${{ github.ref }},
+              name: "hugo.zip",
+              file: fs.readFileSync("./hugo.zip"),
             });
-            return uploadUrl;
