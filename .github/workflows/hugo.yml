@@ -124,5 +124,6 @@ jobs:
               repo: context.repo.repo,
               release_id: ${{ steps.create_release.outputs.result }},
               name: "hugo.zip",
-              data: '@./hugo.zip',
+              fs.readFileSync("hugo.zip"),
+              headers = { 'content-type': 'application/zip', 'content-length': contentLength("hugo.zip") };
             });
