@@ -125,7 +125,7 @@ jobs:
               release_id: ${{ steps.create_release.outputs.result }},
               name: "hugo.zip",
               file: fs.readFileSync("hugo.zip"),
-              headers = {
+              headers: {
                 'content-type': 'application/zip',
                 'content-length': contentLength("hugo.zip") 
               },
