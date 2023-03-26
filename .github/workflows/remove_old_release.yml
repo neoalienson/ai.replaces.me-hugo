@@ -65,12 +65,17 @@ jobs:
         with:
           script: |
             const tags = JSON.parse('${{ steps.get-tags.outputs.tags }}');
+            // assume the first tag is the latest
+            let latestTag = tags[0];
+            console.log(latestTag);
             for (const tag of tags) {
-              console.log(`Deleting tag ${tag.name}...`);
-              await github.rest.git.deleteRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: `tags/${tag.name}`
-              });
-              console.log(`Deleted tag ${tag.name}.`);
+              if (tag !== latestTag) {
+                console.log(`Deleting tag ${tag.name}...`);
+                await github.rest.git.deleteRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `tags/${tag.name}`
+                });
+                console.log(`Deleted tag ${tag.name}.`);
+              }
             }
