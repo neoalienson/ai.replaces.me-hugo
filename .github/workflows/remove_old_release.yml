@@ -8,6 +8,7 @@ on:
 jobs:
   delete-old-releases:
     runs-on: self-hosted
+    permissions: write-all
     steps:
       - name: Get Releases
         uses: actions/github-script@v6
