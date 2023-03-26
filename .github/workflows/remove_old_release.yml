@@ -27,13 +27,15 @@ jobs:
         with:
           script: |
             const releases = JSON.parse('${{ steps.get-releases.outputs.releases }}');
+            let latestRelease = null;
             for (const release of releases) {
-              const { data: tags } = await github.rest.repos.listTags({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                sha: release.target_commitish
-              });
-              if (tags.length > 0 && tags[0].name === release.tag_name) {
+              if (latestRelease === null || new Date(release.created_at) > new Date(latestRelease.created_at)) {
+                latestRelease = release;
+              }
+            }
+
+            for (const release of releases) {
+              if (release.id !== latestRelease.id) {
                 console.log(`Deleting release ${release.tag_name}...`);
                 await github.rest.repos.deleteRelease({
                   owner: context.repo.owner,
@@ -42,6 +44,41 @@ jobs:
                 });
                 console.log(`Deleted release ${release.tag_name}.`);
               }
-            }
+            }      
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Get Tags
+        uses: actions/github-script@v4
+        id: get-tags
+        with:
+          script: |
+            const { data } = await github.rest.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            core.setOutput('tags', JSON.stringify(data));
+
+      - name: Delete Tags
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const tags = JSON.parse('${{ steps.get-tags.outputs.tags }}');
+            let latestTag = null;
+            for (const tag of tags) {
+              if (latestTag === null || new Date(tag.commit.committer.date) > new Date(latestTag.commit.committer.date)) {
+                latestTag = tag;
+              }
+            }
+            for (const tag of tags) {
+              if (tag.sha !== latestTag.sha) {
+                console.log(`Deleting tag ${tag.name}...`);
+                await github.rest.repos.deleteRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `tags/${tag.name}`
+                });
+                console.log(`Deleted tag ${tag.name}.`);
+              }
+            }
