@@ -14,7 +14,7 @@ jobs:
         id: get-releases
         with:
           script: |
-            const { data } = await github.repos.listReleases({
+            const { data } = await github.rest.repos.listReleases({
               owner: context.repo.owner,
               repo: context.repo.repo,
               per_page: 100
@@ -27,14 +27,14 @@ jobs:
           script: |
             const releases = JSON.parse('${{ steps.get-releases.outputs.releases }}');
             for (const release of releases) {
-              const { data: tags } = await github.git.listTags({
+              const { data: tags } = await github.rest.git.listTags({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 sha: release.target_commitish
               });
               if (tags.length > 0 && tags[0].name === release.tag_name) {
                 console.log(`Deleting release ${release.tag_name}...`);
-                await github.repos.deleteRelease({
+                await github.rest.repos.deleteRelease({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   release_id: release.id
