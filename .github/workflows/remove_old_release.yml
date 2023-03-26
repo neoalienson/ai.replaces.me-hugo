@@ -1,0 +1,46 @@
+name: Delete Old Releases
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run every day at midnight
+  workflow_dispatch:
+  
+jobs:
+  delete-old-releases:
+    runs-on: self-hosted
+    steps:
+      - name: Get Releases
+        uses: actions/github-script@v6
+        id: get-releases
+        with:
+          script: |
+            const { data } = await github.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            core.setOutput('releases', JSON.stringify(data));
+
+      - name: Delete Releases
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const releases = JSON.parse('${{ steps.get-releases.outputs.releases }}');
+            for (const release of releases) {
+              const { data: tags } = await github.git.listTags({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: release.target_commitish
+              });
+              if (tags.length > 0 && tags[0].name === release.tag_name) {
+                console.log(`Deleting release ${release.tag_name}...`);
+                await github.repos.deleteRelease({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  release_id: release.id
+                });
+                console.log(`Deleted release ${release.tag_name}.`);
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
