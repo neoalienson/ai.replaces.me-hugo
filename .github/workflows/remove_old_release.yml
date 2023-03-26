@@ -67,7 +67,7 @@ jobs:
             const tags = JSON.parse('${{ steps.get-tags.outputs.tags }}');
             for (const tag of tags) {
               console.log(`Deleting tag ${tag.name}...`);
-              await github.rest.repos.deleteRef({
+              await github.rest.git.deleteRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: `tags/${tag.name}`
