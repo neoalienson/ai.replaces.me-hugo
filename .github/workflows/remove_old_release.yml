@@ -27,7 +27,7 @@ jobs:
           script: |
             const releases = JSON.parse('${{ steps.get-releases.outputs.releases }}');
             for (const release of releases) {
-              const { data: tags } = await github.rest.git.listTags({
+              const { data: tags } = await github.rest.repos.listTags({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 sha: release.target_commitish
