@@ -67,9 +67,11 @@ jobs:
             const tags = JSON.parse('${{ steps.get-tags.outputs.tags }}');
             let latestTag = null;
             for (const tag of tags) {
-            if (latestTag === null || (tag.commit && tag.commit.committer && new Date(tag.commit.committer.date) > new Date(latestTag.commit.committer.date))) {                latestTag = tag;
+              if (latestTag === null || (tag.commit && tag.commit.committer && new Date(tag.commit.committer.date) > new Date(latestTag.commit.committer.date))) {
+                latestTag = tag;
               }
             }
+            console.log(tags);
             for (const tag of tags) {
               if (tag.sha !== latestTag.sha) {
                 console.log(`Deleting tag ${tag.name}...`);
