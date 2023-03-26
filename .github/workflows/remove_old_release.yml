@@ -65,7 +65,8 @@ jobs:
         with:
           script: |
             const tags = JSON.parse('${{ steps.get-tags.outputs.tags }}');
-            let latestTag = null;
+            // assume the first tag is the latest
+            let latestTag = tags[0];
             for (const tag of tags) {
               if (latestTag === null || (tag.commit && tag.commit.committer && new Date(tag.commit.committer.date) > new Date(latestTag.commit.committer.date))) {
                 latestTag = tag;
