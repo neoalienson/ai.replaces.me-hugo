@@ -67,7 +67,6 @@ jobs:
             const tags = JSON.parse('${{ steps.get-tags.outputs.tags }}');
             // assume the first tag is the latest
             let latestTag = tags[0];
-            console.log(latestTag);
             for (const tag of tags) {
               if (tag !== latestTag) {
                 console.log(`Deleting tag ${tag.name}...`);
