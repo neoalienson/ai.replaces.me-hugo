@@ -70,3 +70,102 @@ jobs:
 15. Wait for the workflow to complete, then visit https://ai.replaces.me to see your deployed blog.
 
 That's it! You now have a static blog powered by Hugo and deployed to GitHub Pages using GitHub Actions. You can add more blog posts and customize the theme to your liking.
+
+## Other prompts
+### Delete old releases and tags
+how to delete old all github release and tag using github script. keep the latest release and tag
+
+To delete all old GitHub releases and tags using a GitHub Actions workflow and keep the latest release and tag, you can use the actions/github-script action to interact with the GitHub API and delete the releases and tags. Here's an example:
+
+name: Delete Old Releases and Tags
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run every day at midnight
+
+jobs:
+  delete-old-releases-and-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Releases
+        uses: actions/github-script@v4
+        id: get-releases
+        with:
+          script: |
+            const { data } = await github.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            core.setOutput('releases', JSON.stringify(data));
+
+      - name: Delete Releases
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const releases = JSON.parse('${{ steps.get-releases.outputs.releases }}');
+            let latestRelease = null;
+            for (const release of releases) {
+              if (latestRelease === null || new Date(release.created_at) > new Date(latestRelease.created_at)) {
+                latestRelease = release;
+              }
+            }
+            for (const release of releases) {
+              if (release.id !== latestRelease.id) {
+                console.log(`Deleting release ${release.tag_name}...`);
+                await github.repos.deleteRelease({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  release_id: release.id
+                });
+                console.log(`Deleted release ${release.tag_name}.`);
+              }
+            }
+
+      - name: Get Tags
+        uses: actions/github-script@v4
+        id: get-tags
+        with:
+          script: |
+            const { data } = await github.git.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            core.setOutput('tags', JSON.stringify(data));
+
+      - name: Delete Tags
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const tags = JSON.parse('${{ steps.get-tags.outputs.tags }}');
+            let latestTag = null;
+            for (const tag of tags) {
+              if (latestTag === null || new Date(tag.commit.committer.date) > new Date(latestTag.commit.committer.date)) {
+                latestTag = tag;
+              }
+            }
+            for (const tag of tags) {
+              if (tag.sha !== latestTag.sha) {
+                console.log(`Deleting tag ${tag.name}...`);
+                await github.git.deleteRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `tags/${tag.name}`
+                });
+                console.log(`Deleted tag ${tag.name}.`);
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+In this example, the workflow is triggered daily at midnight using a schedule event. The delete-old-releases-and-tags job has four steps:
+
+Get Releases gets a list of releases using the actions/github-script action and the listReleases method provided by Octokit. We are requesting a maximum of 100 releases per page. The releases are stored in the releases output as a JSON string.
+
+Delete Releases loops through the list of releases, finds the latest release, and deletes all old releases using the deleteRelease method provided by Octokit. We use the new Date() function to compare the created_at property of each release and find the latest one. If the current release is not the latest, we delete the release using the repos.deleteRelease method. We log the deleted release to the console.
+
+Get Tags gets a list of tags using the actions/github-script action and the listTags method provided by Octokit. We are requesting a maximum of 100 tags per page. The tags are stored in the tags output as a JSON string.
+
+Delete Tags loops through the list of tags, finds the latest tag, and deletes all old tags using the deleteRef method provided by Octokit. We use the new Date() function to compare the commit.committer.date property of each tag and find the latest one. If the current tag is not the latest, we delete the tag using the git.deleteRef method. We log the deleted tag to the console.
+
+You can modify the JavaScript code block to customize the delete process, such as changing the criteria for deleting a release or tag or keeping more than one latest release or tag. You can also modify the schedule event to change the frequency of the delete operation. Note that deleting releases and tags can be a destructive operation and cannot be undone, so use with caution.
