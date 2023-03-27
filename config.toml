@@ -2,6 +2,8 @@ baseURL = "https://ai.replaces.me/"
 languageCode = "en-us"
 title = "AI replaces me!"
 theme = "PaperModX"
+[params]
+  custom_css = ["css/vertical-timeline.css"]
 [markup]
   [markup.tableOfContents]
     endLevel = 3

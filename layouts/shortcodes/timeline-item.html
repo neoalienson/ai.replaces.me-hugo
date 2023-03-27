@@ -1,0 +1,13 @@
+<div class="timeline-item">
+    <div class="timeline-icon">
+        {{- with .Get "icon" -}}
+            <i class="{{ . }}"></i>
+        {{- end -}}
+    </div>
+    <div class="timeline-content">
+        <h2>{{ .Get "title" }}</h2>
+        <p>{{ .Inner }}</p>
+        <span class="timeline-date">{{ .Get "date" }}</span>
+    </div>
+</div>
+
